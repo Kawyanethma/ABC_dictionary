@@ -1,0 +1,72 @@
+@font-face {
+  font-family: 'Kranky';
+  src: local('Kranky'), url('./fonts/Kranky-Regular.ttf'), format('ttf');
+}
+
+@font-face {
+  font-family: 'Mono';
+  src: local('Mono'), url('./fonts/RobotoMono-VariableFont_wght.ttf'), format('ttf');
+}
+
+*{
+  font-family: Mono;
+  user-select: none;
+}
+
+::-webkit-scrollbar {
+  width: 1px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #efbe48; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+.titlebar {
+  height: 30px;
+  background: transparent;
+  user-select: none;
+  display: flex;
+  justify-content: flex-end;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  
+  img{
+    width: 7px;
+    opacity: 0;
+    transition: all 0.3s;
+  }
+}
+.titlebar-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 10px;
+  height: 10px;
+  border-radius: 50px;
+  margin-left: 5px;
+  margin-top: 7px;
+  padding: 2px;
+}
+
+.titlebar:hover{
+    img{
+      opacity: 1;
+  }
+}
+
+.titlebar-button:nth-child(1){
+  background: #4dcd39;
+}
+.titlebar-button:nth-child(2){
+  background: #efbe48;
+}
+.titlebar-button:nth-child(3){
+  margin-right: 9px;
+  background: #f35b55;
+}

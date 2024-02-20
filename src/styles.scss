@@ -1,0 +1,157 @@
+body {
+  margin: 0px;
+  background-color: #212121;
+  overflow-y: hidden;
+}
+
+
+.container {
+  background-color: #212121;
+  border-radius: 10px;
+}
+
+.left {
+  height: 100vh;
+  width: 40%;
+  background-color: #eeba2ce6;
+  float: left;
+
+  .logo {
+    font-family: Kranky;
+    margin-top: 15%;
+    margin-left: 25px;
+    font-size: 35px;
+    font-weight: 800;
+  }
+
+  .search {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .searchwithvoice {
+      margin-top: 100px;
+      display: inline-block;
+      width: 95%;
+
+      .voice-button {
+        margin-top: 10px;
+        margin-left: -35px;
+        color: #212121;
+      }
+    }
+
+    .search-button {
+      background: #212121;
+      margin-top: 10px;
+      width: 100px;
+      border-radius: 50px;
+      color: #eeba2c;
+      text-transform: none;
+      font-weight: 600;
+      font-size: medium;
+    }
+
+    .search-bar {
+      width: 90%;
+      margin-left: 15px;
+      color: #212121;
+      font-weight: 800;
+    }
+  }
+  .wave {
+    margin-top: 11%;
+  }
+  .about {
+    width: 40%;
+    display: block;
+    position: absolute;
+    bottom: 5px;
+    text-align: center;
+    font-size: 8px;
+  }
+}
+
+.right {
+  height: 100vh;
+  background-color: #212121;
+  width: 60%;
+  float: right;
+  color: #eeba2c;
+}
+
+.text-solid {
+  display: flex;
+  flex-direction: column;
+  margin-top: 18%;
+  margin-left: 30px;
+  margin-right: 30px;
+
+  .play-h1 {
+    display: inline-flex;
+    position: relative;
+
+    .play-button {
+      margin-top: 12px;
+      border: #eeba2c solid;
+      color: #eeba2c;
+      border-radius: 100%;
+      height: 40px;
+      width: 40px;
+    }
+  }
+
+  h1 {
+    font-size: 45px;
+    font-weight: bolder;
+    margin: 0;
+    margin-right: 40px;
+  }
+  .phonetic {
+    color: #d1d0c5;
+    font-weight: 400;
+    font-size: 18px;
+    margin-top: -3px;
+  }
+}
+
+.custom-header {
+  margin-top: 5px;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+  background-color: #ffffff07;
+  margin-bottom: 12px;
+}
+
+.definition-area {
+  margin-top: 10px;
+  overflow-y: auto;
+  margin-left: 5px;
+  height: 58vh;
+  
+  .partOfSpeech {
+    color: #eeba2c;
+    font-weight: 900;
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .def {
+    color: #d1d0c5;
+    font-size: 15px;
+    margin-top: 10px;
+  }
+
+  .example {
+    color: #eeba2c;
+    font-weight: 800;
+  }
+  .example-text {
+    color: #d1d0c5;
+    font-size: 15px;
+    margin-top: -10px;
+    margin-bottom: 0;
+  }
+}
+
