@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { appWindow } from "@tauri-apps/api/window";
-import Axios from "axios";
-
+import CircularProgress from '@mui/material/CircularProgress';
+import 'regenerator-runtime'
+import speech, { useSpeechRecognition } from 'react-speech-recognition';
 import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 import { IconButton } from "@mui/material";
@@ -10,14 +11,14 @@ import Button from "@mui/material/Button";
 import KeyboardVoiceIcon from "@mui/icons-material/KeyboardVoice";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
-
 import Lottie from "react-lottie";
 import animationData from "./assets/lotties/wave.json";
-
+import animationData1 from "./assets/lotties/mic.json";
 import close from "./assets/close.png";
 import min from "./assets/minimize-sign.png";
 import max from "./assets/maximize.png";
 import "./App.scss";
+import axios from "axios";
 
 function App() {
   const [data, setData] = useState("");
@@ -32,6 +33,14 @@ function App() {
     "You are welcome to the ABC Dictionary, You can type or use your voice to search! 😊"
   );
   const [isStop, setIsStop] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -41,19 +50,30 @@ function App() {
 
   const getMeaning = async () => {
     try {
-      Axios.get(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${typedWord}`
-      ).then(async (response) => {
-        await setData(response.data[0]);
-      });
+      setIsLoading(true);
+      const response = await axios(`https://api.dictionaryapi.dev/api/v2/entries/en/${typedWord}`);
+      setData(response.data[0]);
     } catch (e) {
       console.log(e.name);
+    } finally{
+      setIsLoading(false);
     }
   };
+useEffect(() => {
+
+  if(transcript && listening) {
+    settypedWord(transcript);
+    console.log(typedWord);
+    console.log(isLoading);
+  }
+  if(!isLoading && !listening && transcript!=false){
+    // update()
+  }
+
+}, [transcript, listening])
 
   useEffect(() => {
     if (typedWord == "" && displayWord!="Welcome") {
-
       if (data==null) {
         setdisplayWord("null")
       }
@@ -68,8 +88,9 @@ function App() {
   }, [typedWord]);
 
   function update() {
-    if (typedWord != "") {
-      if (typedWord == data.word){
+    console.log(isLoading);
+    setdisplayWord("Loading");
+      if (!isLoading){
         setdisplayWord(data.word);
         setphonetic(data.phonetic);
         setPartOfSpeech(data.meanings[0].partOfSpeech);
@@ -80,7 +101,14 @@ function App() {
       }
       
     }
-  }
+    const defaultOptionsMic = {
+      loop: true,
+      autoplay: false,
+      animationData: animationData1,
+      rendererSettings: {
+        preserveAspectRatio: "xMidYMid slice",
+      },
+    };
 
   const defaultOptions = {
     loop: true,
@@ -164,99 +192,113 @@ function App() {
   const outerTheme = useTheme();
 
   return (
+
     <div className="container">
-      <div data-tauri-drag-region class="titlebar">
-        <div
-          class="titlebar-button max"
-          onClick={() => appWindow.toggleMaximize()}
-        >
-          <img src={max} alt="maximize" />
-        </div>
-        <div class="titlebar-button min" onClick={() => appWindow.minimize()}>
-          <img src={min} alt="minimize" onClick={() => appWindow.minimize()} />
-        </div>
-        <div class="titlebar-button close" onClick={() => appWindow.close()}>
-          <img src={close} alt="close" />
-        </div>
+    <div data-tauri-drag-region class="titlebar">
+      <div
+        class="titlebar-button max"
+        onClick={() => appWindow.toggleMaximize()}
+      >
+        <img src={max} alt="maximize" />
       </div>
-
-      <div className="left">
-        <div className="logo">
-          ABC...
-          <br /> Dictionary
-        </div>
-        <div className="search">
-          <ThemeProvider theme={customTheme(outerTheme)}>
-            <div className="searchwithvoice">
-              <TextField
-                focused
-                autoComplete="off"
-                className="search-bar"
-                id="standard-basic"
-                label="Search English"
-                variant="standard"
-                placeholder="Start typing any word"
-                onKeyDown={handleKeyDown}
-                onChange={(e) => settypedWord(e.target.value)}
-              />
-              <IconButton
-                className="voice-button"
-                variant="contained"
-                onClick={() => setdisplayWord("Mic")}
-              >
-                {" "}
-                <KeyboardVoiceIcon />
-              </IconButton>
-            </div>
-          </ThemeProvider>
-          <Button
-            className="search-button"
-            variant="contained"
-            onClick={() => update()}
-          >
-            Search
-          </Button>
-        </div>
-        <div className="wave">
-          <Lottie
-            options={defaultOptions}
-            height={100}
-            width={100}
-            isPaused={isStop}
-            isClickToPauseDisabled={true}
-          />
-        </div>
-        <p className="about">
-          Powered by dictionaryapi.dev and OpenAI API
-          <br /> build with tauri + react + vite
-          <br /> 1.0v
-        </p>
+      <div class="titlebar-button min" onClick={() => appWindow.minimize()}>
+        <img src={min} alt="minimize" onClick={() => appWindow.minimize()} />
       </div>
+      <div class="titlebar-button close" onClick={() => appWindow.close()}>
+        <img src={close} alt="close" />
+      </div>
+    </div>
 
-      <div className="right">
-        <div className="text-solid">
-          <div className="play-h1">
-            <h1>{displayWord}</h1>
+    <div className="left">
+      <div className="logo">
+        ABC...
+        <br /> Dictionary
+      </div>
+      <div className="search">
+        <ThemeProvider theme={customTheme(outerTheme)}>
+          <div className="searchwithvoice">
+            <TextField
+              focused
+              autoComplete="off"
+              className="search-bar"
+              id="standard-basic"
+              label="Search English"
+              variant="standard"
+              value={listening? `${transcript}`:null}
+              placeholder={listening? "Listening...":"Start typing any word"}
+              onKeyDown={handleKeyDown}
+              onChange={(e) => settypedWord(e.target.value)}
+            />
             <IconButton
-              className="play-button"
+              className="voice-button"
               variant="contained"
-              onClick={() => (isStop ? setIsStop(false) : setIsStop(true))}
+              onClick={() => speech.startListening()}
             >
-              {isStop ? <PlayArrowIcon /> : <PauseIcon />}
+                <Lottie
+                className="mic"
+                options={defaultOptionsMic}
+                height={60}
+                width={60}
+                isStopped={!listening}
+                isClickToPauseDisabled={true}
+                />
+              {/* <KeyboardVoiceIcon /> */}
             </IconButton>
           </div>
-          <p className="phonetic">{phonetic}</p>
-          <div className="definition-area">
-            <div className="custom-header">
-              <p className="partOfSpeech">{partOfSpeech}</p>
-              <p className="def">{def}</p>
-              <p className="example">Example</p>
-              <p className="example-text">{example}</p>
-            </div>
+        </ThemeProvider>
+        <Button
+          className="search-button"
+          variant="contained"
+          onClick={() => update()}
+        >
+          Search
+        </Button>
+      </div>
+      <div className="wave">
+        <Lottie
+          options={defaultOptions}
+          height={100}
+          width={100}
+          isPaused={isStop}
+          isClickToPauseDisabled={true}
+        />
+      </div>
+      <p className="about">
+        Powered by dictionaryapi.dev and OpenAI API
+        <br /> build with tauri + react + vite
+        <br /> 1.0v
+      </p>
+    </div>
+
+    <div className="right">
+      <div className="text-solid">
+        <div className="play-h1">
+          <h1>{displayWord}</h1>
+          <IconButton
+            className="play-button"
+            variant="contained"
+            onClick={() => 
+              // (isStop ? setIsStop(false) : setIsStop(true))
+              speech.stopListening()
+            }
+          >
+            {listening ? <PlayArrowIcon /> : <PauseIcon />}
+          </IconButton>
+
+        </div>
+        <p className="phonetic">{phonetic}</p>
+        <div className="definition-area">
+          <div className="custom-header">
+            <p className="partOfSpeech">{partOfSpeech}</p>
+            <p className="def">{def}</p>
+            <p className="example">Example</p>
+            <p className="example-text">{example}</p>
+            
           </div>
         </div>
       </div>
     </div>
+  </div>
   );
 }
 
