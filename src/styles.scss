@@ -36,9 +36,13 @@ body {
 
       .voice-button {
         padding: 0;
-        margin-top: -10px;
-        margin-left: -45px;
+        margin-top: -12px;
+        margin-left: -55px;
         color: #212121;
+
+        .mic{
+          margin: 0;
+        }
       }
     }
 
@@ -50,7 +54,6 @@ body {
       color: #eeba2c;
       text-transform: none;
       font-weight: 600;
-      font-size: medium;
     }
 
     .search-bar {
@@ -61,7 +64,7 @@ body {
     }
   }
   .wave {
-    margin-top: 11%;
+    margin-top: 9%;
   }
   .about {
     width: 40%;
@@ -156,6 +159,13 @@ body {
   }
 }
 
-.mic{
-  margin: 0;
+.popUp{
+  margin: 8px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  .settings{
+    align-self: flex-end;
+    color:#d1d0c5;
+  }
 }
