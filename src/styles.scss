@@ -159,7 +159,7 @@ body {
   }
 }
 
-.popUp{
+.side-menu{
   margin: 8px;
   position: absolute;
   right: 0;
@@ -168,4 +168,82 @@ body {
     align-self: flex-end;
     color:#d1d0c5;
   }
+  .settings:hover{
+    color: #eeba2c;
+  }
 }
+
+.settings{
+  background: rgba(33, 33, 33, 0);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.2px);
+  -webkit-backdrop-filter: blur(10.2px);
+
+  .voice-select{
+    margin-top: 7px;
+    background-color: #212121;
+    width: 250px;
+    height: 40px;
+    color: #eeba2c;
+
+    .MuiSelect-icon{
+      color: #eeba2c;
+    }
+  }
+  .settings-menu{
+    overflow: hidden;
+    width: 300px;
+    height: inherit;
+    background-color: #c79b22;
+    padding: 30px;
+    color: #212121;
+
+    h1{
+      margin-top: 40px;
+    }
+    .settings-items{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  .slider{
+    color: #212121;
+    width: 250px;
+  }
+
+  .setting-comp{
+    width: fit-content;
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reset-button {
+    background: #212121;
+    margin-top: 20px;
+    width: 100px;
+    border-radius: 50px;
+    color: #eeba2c;
+    text-transform: none;
+    font-weight: 600;
+ }
+
+ .reset-button:hover{
+  color: #c79b22;
+  background-color: #242424;
+ }
+
+ label{
+   font-size: 14px;
+   font-weight: 700;
+ }
+
+}
+.about-dev{
+  position: absolute;
+  left: 0;
+  bottom: 0;
+ }

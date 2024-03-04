@@ -1,40 +1,37 @@
+import "regenerator-runtime";
 import { useEffect, useState } from "react";
 import { appWindow } from "@tauri-apps/api/window";
-import CircularProgress from "@mui/material/CircularProgress";
-import SettingsIcon from "@mui/icons-material/Settings";
-import CancelIcon from "@mui/icons-material/Cancel";
-import "regenerator-runtime";
 import speech, { useSpeechRecognition } from "react-speech-recognition";
+import Lottie from "react-lottie";
+
 import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
-import { IconButton } from "@mui/material";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
-import Lottie from "react-lottie";
-import loadingIcon from "./assets/lotties/loading.json"
+import { IconButton, TextField, Button, Drawer } from "@mui/material";
+import { PlayArrow, Pause, Cancel, Settings } from "@mui/icons-material";
+
+import loadingIcon from "./assets/lotties/loading.json";
 import animationData from "./assets/lotties/wave.json";
 import animationData1 from "./assets/lotties/mic.json";
 import close from "./assets/close.png";
 import min from "./assets/minimize-sign.png";
 import max from "./assets/maximize.png";
 import "./App.scss";
-import { Unstable_Popup as BasePopup } from "@mui/base/Unstable_Popup";
+
 import axios from "axios";
 import TextToSpeech from "./tts";
-import TtsVar from "./ttsVar";
+import { useGlobalState, setGlobalState } from "./state";
 
 function App() {
   const synth = window.speechSynthesis;
-  const [utterance, setUtterance] = useState(null);
-  const [voice, setVoice] = useState(null);
-  const [pitch, setPitch] = useState(1);
-  const [rate, setRate] = useState(1);
-  const [volume, setVolume] = useState(1);
+  const [utterance, setUtterance] = useState("");
+  const [voice, setVoice] = useGlobalState("voice");
+  const [pitch] = useGlobalState("pitch");
+  const [rate] = useGlobalState("rate");
+  const [volume] = useGlobalState("volume");
+
   const [isStop, setIsStop] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [anchor, setAnchor] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const [data, setData] = useState("");
   const [typedWord, settypedWord] = useState("");
@@ -48,15 +45,21 @@ function App() {
     "You are welcome to the ABC Dictionary, You can type or use your voice to search! 😊"
   );
 
+  const toggleDrawer = (newOpen) => () => {
+    handleStop();
+    setOpen(newOpen);
+  };
 
   useEffect(() => {
-    const u = new SpeechSynthesisUtterance(`${displayWord}. this word is a ${partOfSpeech}. Definition is. ${def}`);
+    const u = new SpeechSynthesisUtterance(
+      `${displayWord}. this word is a ${partOfSpeech}. Definition is. ${def}`
+    );
     setUtterance(u);
     const voices = synth.getVoices();
-      setVoice(voices[2]);
-    u.onend = () =>{
+    setVoice(voices[2]);
+    u.onend = () => {
       setIsStop(true);
-    }
+    };
 
     return () => {
       synth.cancel();
@@ -67,46 +70,18 @@ function App() {
   }, [displayWord]);
 
   const handlePlay = () => {
-    setIsStop(false)
-      utterance.voice = voice;
-      utterance.pitch = pitch;
-      utterance.rate = rate;
-      utterance.volume = volume;
-      synth.speak(utterance);
+    setIsStop(false);
+    utterance.voice = voice;
+    utterance.pitch = pitch;
+    utterance.rate = rate;
+    utterance.volume = volume;
+    synth.speak(utterance);
   };
-
-
 
   const handleStop = () => {
     setIsStop(true);
     synth.cancel();
   };
-
-  const handleVoiceChange = (event) => {
-    const voices = window.speechSynthesis.getVoices();
-    setVoice(voices.find((v) => v.name === event.target.value));
-    console.log(voice.name);
-  };
-
-  const handlePitchChange = (event) => {
-    setPitch(parseFloat(event.target.value));
-  };
-
-  const handleRateChange = (event) => {
-    setRate(parseFloat(event.target.value));
-  };
-
-  const handleVolumeChange = (event) => {
-    setVolume(parseFloat(event.target.value));
-  };
-
-  const SettingshandleClick = (event) => {
-    setAnchor(anchor ? null : event.currentTarget);
-    console.log(open);
-  };
-
-  const open = Boolean(anchor);
-  const id = open ? "simple-popper" : undefined;
 
   const {
     transcript,
@@ -139,18 +114,17 @@ function App() {
   };
 
   useEffect(() => {
-    if(!isLoading){
+    if (!isLoading) {
       console.log("data is updated");
       console.log(data.word);
       update();
     }
-  }, [data])
-  
+  }, [data]);
 
   useEffect(() => {
     settypedWord(transcript);
     console.log(typedWord);
-      console.log(transcript);
+    console.log(transcript);
     if (listening && transcript != false) {
       getMeaning();
     }
@@ -169,10 +143,7 @@ function App() {
       setPartOfSpeech("Search english");
       setDef("Strat typing any word or talk to mic ! 😊");
       setExample("Examples are Display here ! 💫");
-    } 
-    // else  {
-    //   getMeaning();
-    // }
+    }
   }, [typedWord]);
 
   function update() {
@@ -290,19 +261,24 @@ function App() {
   const outerTheme = useTheme();
 
   return (
-
     <div className="container">
-      <div data-tauri-drag-region class="titlebar">
+      <div data-tauri-drag-region className="titlebar">
         <div
-          class="titlebar-button max"
+          className="titlebar-button max"
           onClick={() => appWindow.toggleMaximize()}
         >
           <img src={max} alt="maximize" />
         </div>
-        <div class="titlebar-button min" onClick={() => appWindow.minimize()}>
+        <div
+          className="titlebar-button min"
+          onClick={() => appWindow.minimize()}
+        >
           <img src={min} alt="minimize" onClick={() => appWindow.minimize()} />
         </div>
-        <div class="titlebar-button close" onClick={() => appWindow.close()}>
+        <div
+          className="titlebar-button close"
+          onClick={() => appWindow.close()}
+        >
           <img src={close} alt="close" />
         </div>
       </div>
@@ -322,7 +298,7 @@ function App() {
                 id="standard-basic"
                 label="Search English"
                 variant="standard"
-                value={listening ? `${transcript}` : null}
+                value={listening ? `${transcript}` : `${typedWord}`}
                 placeholder={
                   listening ? "Listening..." : "Start typing any word"
                 }
@@ -333,7 +309,7 @@ function App() {
                 className="voice-button"
                 variant="contained"
                 onClick={() =>
-                  listening? speech.stopListening() : speech.startListening()
+                  listening ? speech.stopListening() : speech.startListening()
                 }
               >
                 <Lottie
@@ -365,60 +341,63 @@ function App() {
           />
         </div>
         <p className="about">
-          Powered by dictionaryapi.dev and OpenAI API
+          Powered by dictionaryapi.dev and Web Speech API
           <br /> build with tauri + react + vite
           <br /> 1.0v
         </p>
       </div>
 
-      {isLoading? <div className="loading"><Lottie
+      {isLoading ? (
+        <div className="loading">
+          <Lottie
             options={defaultOptionsLoading}
             height={300}
             width={300}
             isPaused={isStop}
             isClickToPauseDisabled={true}
-          /></div>:<div className="right">
-        <div className="popUp">
-          <IconButton
-            className="settings"
-            aria-describedby={id}
-            type="button"
-            onClick={SettingshandleClick}
-          >
-            {open ? (
-              <CancelIcon style={{ fontSize: 20 }} />
-            ) : (
-              <SettingsIcon style={{ fontSize: 20 }} />
-            )}
-          </IconButton>
-          <BasePopup id={id} open={open} anchor={anchor}>
-          <TtsVar>
-          <TextToSpeech text={"hello whatsup"} isStoped={isStop}/>
-          </TtsVar>
-          </BasePopup>
+          />
         </div>
-        <div className="text-solid">
-          <div className="play-h1">
-            <h1>{displayWord}</h1>
-            <IconButton
-              className="play-button"
-              variant="contained"
-              onClick={isStop? handlePlay:handleStop}
-            >
-              {isStop ? <PlayArrowIcon /> : <PauseIcon />}
-            </IconButton>
-          </div>
-          <p className="phonetic">{phonetic}</p>
-          <div className="definition-area">
-            <div className="custom-header">
-              <p className="partOfSpeech">{partOfSpeech}</p>
-              <p className="def">{def}</p>
-              <p className="example">Example</p>
-              <p className="example-text">{example}</p>
+      ) : (
+        <div className="right">
+          <div className="text-solid">
+            <div className="play-h1">
+              <h1>{displayWord}</h1>
+              <IconButton
+                className="play-button"
+                variant="contained"
+                onClick={isStop ? handlePlay : handleStop}
+              >
+                {isStop ? <PlayArrow /> : <Pause />}
+              </IconButton>
+            </div>
+            <p className="phonetic">{phonetic}</p>
+            <div className="definition-area">
+              <div className="custom-header">
+                <p className="partOfSpeech">{partOfSpeech}</p>
+                <p className="def">{def}</p>
+                <p className="example">Example</p>
+                <p className="example-text">{example}</p>
+              </div>
+            </div>
+            <div className="side-menu">
+              <IconButton
+                className="settings"
+                type="button"
+                onClick={toggleDrawer(true)}
+              >
+                {open ? (
+                  <Cancel style={{ fontSize: 20 }} />
+                ) : (
+                  <Settings style={{ fontSize: 20 }} />
+                )}
+              </IconButton>
+              <Drawer className="settings" open={open} onClose={toggleDrawer(false)}>
+                {<TextToSpeech />}
+              </Drawer>
             </div>
           </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }
