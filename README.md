@@ -1,7 +1,12 @@
 <center>
 
+<<<<<<< Updated upstream
  ![128x128](https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/951b0e93-8ba3-4195-b980-ccfcd4c2f61f)
 
+=======
+ ![alt logo](128x128.png) 
+ 
+>>>>>>> Stashed changes
  </center>
 
 # ABC Dictionary
