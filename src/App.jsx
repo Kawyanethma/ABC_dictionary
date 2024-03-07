@@ -1,28 +1,21 @@
 import "regenerator-runtime";
+import "./App.scss";
 import { useEffect, useState } from "react";
-import { appWindow } from "@tauri-apps/api/window";
 import speech, { useSpeechRecognition } from "react-speech-recognition";
 import Lottie from "react-lottie";
-
-import { createTheme, ThemeProvider, useTheme } from "@mui/material/styles";
-import { outlinedInputClasses } from "@mui/material/OutlinedInput";
+import { ThemeProvider, useTheme } from "@mui/material/styles";
 import { IconButton, TextField, Button, Drawer } from "@mui/material";
 import { PlayArrow, Pause, Cancel, Settings } from "@mui/icons-material";
-
-import loadingIcon from "./assets/lotties/loading.json";
-import animationData from "./assets/lotties/wave.json";
-import animationData1 from "./assets/lotties/mic.json";
-import close from "./assets/close.png";
-import min from "./assets/minimize-sign.png";
-import max from "./assets/maximize.png";
-import "./App.scss";
-
-import axios from "axios";
+import getMeaning from "./components/DictionaryAPI";
+import { defaultOptionsLoading, defaultOptionsMic, defaultOptions } from "./assets/lotties/options";
+import { useGlobalState } from "./state";
 import TextToSpeech from "./tts";
-import { useGlobalState, setGlobalState } from "./state";
+import customTheme from "./themes";
+import NoInternet from "./NoInternet";
 
 function App() {
   const synth = window.speechSynthesis;
+  const outerTheme = useTheme();
   const [utterance, setUtterance] = useState("");
   const [voice, setVoice] = useGlobalState("voice");
   const [pitch] = useGlobalState("pitch");
@@ -30,10 +23,10 @@ function App() {
   const [volume] = useGlobalState("volume");
 
   const [isStop, setIsStop] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useGlobalState("isLoading");
   const [open, setOpen] = useState(false);
 
-  const [data, setData] = useState("");
+  const [data] = useGlobalState("data");
   const [typedWord, settypedWord] = useState("");
   const [displayWord, setdisplayWord] = useState("Welcome");
   const [phonetic, setphonetic] = useState("/ˈwɛlkəm/");
@@ -44,11 +37,9 @@ function App() {
   const [example, setExample] = useState(
     "You are welcome to the ABC Dictionary, You can type or use your voice to search! 😊"
   );
+  
+  const {transcript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
-  const toggleDrawer = (newOpen) => () => {
-    handleStop();
-    setOpen(newOpen);
-  };
 
   useEffect(() => {
     const u = new SpeechSynthesisUtterance(
@@ -60,7 +51,6 @@ function App() {
     u.onend = () => {
       setIsStop(true);
     };
-
     return () => {
       synth.cancel();
       synth.removeEventListener("voiceschanged", () => {
@@ -69,54 +59,8 @@ function App() {
     };
   }, [displayWord]);
 
-  const handlePlay = () => {
-    setIsStop(false);
-    utterance.voice = voice;
-    utterance.pitch = pitch;
-    utterance.rate = rate;
-    utterance.volume = volume;
-    synth.speak(utterance);
-  };
-
-  const handleStop = () => {
-    setIsStop(true);
-    synth.cancel();
-  };
-
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      getMeaning();
-    }
-  };
-
-  const getMeaning = async () => {
-    const word = typedWord.replace(/[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g, "");
-    try {
-      setIsLoading(true);
-      console.log("getMeaning is running");
-      console.log(word);
-      const response = await axios(
-        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
-      );
-      setData(response.data[0]);
-    } catch (e) {
-      console.log(e.name);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!isLoading) {
-      console.log("data is updated");
-      console.log(data.word);
       update();
     }
   }, [data]);
@@ -126,7 +70,7 @@ function App() {
     console.log(typedWord);
     console.log(transcript);
     if (listening && transcript != false) {
-      getMeaning();
+      getMeaning(typedWord);
     }
     if (!listening && transcript != false && !isLoading) {
       resetTranscript;
@@ -146,10 +90,32 @@ function App() {
     }
   }, [typedWord]);
 
+  const handlePlay = () => {
+    setIsStop(false);
+    utterance.voice = voice;
+    utterance.pitch = pitch;
+    utterance.rate = rate;
+    utterance.volume = volume;
+    synth.speak(utterance);
+  };
+
+  const handleStop = () => {
+    setIsStop(true);
+    synth.cancel();
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      getMeaning(typedWord);
+    }
+  };
+
+  const toggleDrawer = (newOpen) => () => {
+    handleStop();
+    setOpen(newOpen);
+  };
+
   function update() {
-    console.log("update is runinng");
-    console.log(typedWord);
-    console.log(isLoading);
     if (!isLoading && data != "") {
       setdisplayWord(data.word);
       setphonetic(data.phonetic);
@@ -158,131 +124,10 @@ function App() {
       setExample(data.meanings[0].definitions[0].example);
     }
   }
-  const defaultOptionsLoading = {
-    loop: true,
-    autoplay: true,
-    animationData: loadingIcon,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
-
-  const defaultOptionsMic = {
-    loop: true,
-    autoplay: false,
-    animationData: animationData1,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
-
-  const defaultOptions = {
-    loop: true,
-    autoplay: false,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
-
-  const customTheme = (outerTheme) =>
-    createTheme({
-      typography: {
-        fontFamily: "Mono",
-      },
-      palette: {
-        mode: outerTheme.palette.mode,
-      },
-      components: {
-        MuiTextField: {
-          styleOverrides: {
-            root: {
-              "--TextField-brandBorderColor": "#212121",
-              "--TextField-brandBorderHoverColor": "#3b3b33",
-              "--TextField-brandBorderFocusedColor": "#212121",
-              "& label.Mui-focused": {
-                color: "black",
-              },
-            },
-          },
-        },
-        MuiOutlinedInput: {
-          styleOverrides: {
-            notchedOutline: {
-              borderColor: "var(--TextField-brandBorderColor)",
-            },
-            root: {
-              [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
-                borderColor: "var(--TextField-brandBorderHoverColor)",
-              },
-              [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
-                borderColor: "var(--TextField-brandBorderFocusedColor)",
-              },
-            },
-          },
-        },
-        MuiFilledInput: {
-          styleOverrides: {
-            root: {
-              "&::before, &::after": {
-                borderBottom: "2px solid var(--TextField-brandBorderColor)",
-              },
-              "&:hover:not(.Mui-disabled, .Mui-error):before": {
-                borderBottom:
-                  "2px solid var(--TextField-brandBorderHoverColor)",
-              },
-              "&.Mui-focused:after": {
-                borderBottom:
-                  "2px solid var(--TextField-brandBorderFocusedColor)",
-              },
-            },
-          },
-        },
-        MuiInput: {
-          styleOverrides: {
-            root: {
-              "&::before": {
-                borderBottom: "2px solid var(--TextField-brandBorderColor)",
-              },
-              "&:hover:not(.Mui-disabled, .Mui-error):before": {
-                borderBottom:
-                  "2px solid var(--TextField-brandBorderHoverColor)",
-              },
-              "&.Mui-focused:after": {
-                borderBottom:
-                  "2px solid var(--TextField-brandBorderFocusedColor)",
-              },
-            },
-          },
-        },
-      },
-    });
-
-  const outerTheme = useTheme();
 
   return (
+    <NoInternet>
     <div className="container">
-      <div data-tauri-drag-region className="titlebar">
-        <div
-          className="titlebar-button max"
-          onClick={() => appWindow.toggleMaximize()}
-        >
-          <img src={max} alt="maximize" />
-        </div>
-        <div
-          className="titlebar-button min"
-          onClick={() => appWindow.minimize()}
-        >
-          <img src={min} alt="minimize" onClick={() => appWindow.minimize()} />
-        </div>
-        <div
-          className="titlebar-button close"
-          onClick={() => appWindow.close()}
-        >
-          <img src={close} alt="close" />
-        </div>
-      </div>
-
       <div className="left">
         <div className="logo">
           ABC...
@@ -326,7 +171,7 @@ function App() {
           <Button
             className="search-button"
             variant="contained"
-            onClick={() => getMeaning()}
+            onClick={() => getMeaning(typedWord)}
           >
             Search
           </Button>
@@ -353,7 +198,6 @@ function App() {
             options={defaultOptionsLoading}
             height={300}
             width={300}
-            isPaused={isStop}
             isClickToPauseDisabled={true}
           />
         </div>
@@ -399,6 +243,7 @@ function App() {
         </div>
       )}
     </div>
+    </NoInternet>
   );
 }
 

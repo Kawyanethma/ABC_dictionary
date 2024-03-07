@@ -46,8 +46,8 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 10px;
-  height: 10px;
+  width: 11px;
+  height: 11px;
   border-radius: 50px;
   margin-left: 5px;
   margin-top: 7px;
@@ -74,4 +74,16 @@
   position: absolute;
   top: 22%;
   left:52%;
+}
+.NoInternet{
+  height: 100vh; /* Magic here */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #efbe48;
+  text-align: center;
+  
+  h1{
+    margin-top: 0;
+  }
 }
