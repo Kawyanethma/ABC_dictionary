@@ -1,6 +1,5 @@
 <p align="center">
-
- ![128x128](https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/951b0e93-8ba3-4195-b980-ccfcd4c2f61f)
+<img src="https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/951b0e93-8ba3-4195-b980-ccfcd4c2f61f" alt="logo">
  <p/>
 
 # ABC Dictionary
@@ -19,8 +18,8 @@
 ## Screenshots
 
 <p align="center">
-<img src="https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/5dc8f846-7f26-4d50-a1f9-88dd5e6e04b9" alt="drawing" width="400">
-<img src="https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/a4b4ee4b-3c57-4fb1-8157-c5aedf3050a5" alt="drawing" width="400">
+<img src="https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/5dc8f846-7f26-4d50-a1f9-88dd5e6e04b9" alt="Screenshots-1" width="400">
+<img src="https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/a4b4ee4b-3c57-4fb1-8157-c5aedf3050a5" alt="Screenshots-2" width="400">
 </p>
 
 ## Download
