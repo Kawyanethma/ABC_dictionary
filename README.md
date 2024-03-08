@@ -14,6 +14,9 @@
 - Listen to audio pronunciations
 - Simple and intuitive user interface
 
+> [!NOTE]
+> This software requires an internet connection !
+
 ## Screenshots
 
 <img src="https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/5dc8f846-7f26-4d50-a1f9-88dd5e6e04b9" alt="drawing" width="400">
@@ -27,12 +30,38 @@ You can download the program for free from this repo.
 - Windows - Download
 - Mac/Linux - Coming Soon !
 
-## Used libraries
 
+## Used libraries
+[Material UI](https://mui.com/material-ui/getting-started/)
+> this is an open-source React component library that implements Google's Material Design. It's comprehensive and can be used in production out of the box.
 ```
-mui
-axios
-react-lottie
-react-hooks-global-state
-react-speech-recognition
+npm install @mui/material @emotion/react @emotion/styled
+```
+<hr/>
+
+[Axios](https://axios-http.com/docs/intro)
+>Axios is a promise-based HTTP Client for node.js and the browser. It is isomorphic (= it can run in the browser and nodejs with the same codebase).
+```
+npm install axios
+```
+<hr/>
+
+[Lottie Animations](https://lottiefiles.com/blog/working-with-lottie-animations/how-to-use-lottie-in-react-app/)
+>A Lottie is a JSON-based animation file format that lets you ship animations on any platform as easily as shipping static assets.
+```
+npm install --save react-lottie
+```
+<hr/>
+
+[Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)
+>The SpeechRecognition interface of the Web Speech API is the controller interface for the recognition service; this also handles the SpeechRecognitionEvent sent from the recognition service.
+```
+npm install --save react-speech-recognition
+```
+<hr/>
+
+[react-hooks-global-state](https://github.com/dai-shi/react-hooks-global-state)
+>Simple global state for React with Hooks API without Context API
+```
+npm install react-hooks-global-state
 ```
