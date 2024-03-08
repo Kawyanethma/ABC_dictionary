@@ -22,12 +22,12 @@
 <img src="https://github.com/Kawyanethma/ABC_dictionary/assets/92635894/a4b4ee4b-3c57-4fb1-8157-c5aedf3050a5" alt="Screenshots-2" width="400">
 </p>
 
-## Download
+## [Download](https://github.com/Kawyanethma/ABC_dictionary/releases)
 
 You can download the program for free from this repo.
 
-- Windows - Download
-- Mac/Linux - Coming Soon !
+- [Windows](https://github.com/Kawyanethma/ABC_dictionary/releases) - (2.74 MB)
+- Mac/Linux - (Coming Soon! :blush:)
 
 
 ## Used libraries
