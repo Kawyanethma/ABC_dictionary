@@ -6,6 +6,10 @@
 
 **ABC dictionary** is a lightweight and easy-to-use dictionary application built with simplicity in mind. It provides a straightforward interface for looking up word definitions, part of the word, and pronunciations.
 
+ >Powered by dictionaryapi.dev and Web Speech API
+
+ >Build with tauri + react + vite
+
 ## Features
 
 - Voice search
